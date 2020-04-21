@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+	<head>
+
+		<meta charset="UTF-8">
+
+		<title>Snake</title>
+
+	</head>
+
+	<body>
+		
+		<canvas id="stage" width="400" height="400"></canvas>
+		<script type="text/javascript">
+			
+			window.onload = function(){
+
+				var stage = document.getElementById('stage');
+				var context = stage.getContext("2d");
+
+				document.addEventListener("keydown", keyPush);
+
+				setInterval(game, 1000/15);
+
+				const vel = 1; //Quantas casas a cobra vai andar
+				var vel_x = vel_y = 0; //Velocidade da cobra
+				var ponto_x = ponto_y = 2; //Posição da cabeça
+				var tamanho_peca = 20; //Tamanha de cada pixel da cobra
+				var quantidade_peca = 20; //Quantidade de casa que há no jogo
+				var maca_x = maca_y = Math.floor(Math.random() * quantidade_peca); //Posição inicial da maça
+				var dontRepeat = 0;
+
+				var trail = [];
+				tail = 0;
+
+				function game(){
+
+					ponto_x += vel_x;
+					ponto_y += vel_y;
+
+					if (ponto_x < 0) {
+
+						ponto_x = quantidade_peca - 1;
+
+					} 
+
+					if (ponto_x > quantidade_peca - 1) {
+
+						ponto_x = 0;
+					}
+
+					if (ponto_y < 0) {
+
+						ponto_y = quantidade_peca - 1;
+
+					} 
+
+					if (ponto_y > quantidade_peca - 1) {
+
+						ponto_y = 0;
+					}
+
+					for (var i = 0; i < stage.width; i += quantidade_peca) {
+						for (var j = 0; j < stage.height; j += quantidade_peca) {
+						    context.fillStyle = (i / quantidade_peca + j / quantidade_peca) % 2 === 0? "#FFFFFF" : "#D3D3D3";
+						    context.fillRect(i, j, quantidade_peca, quantidade_peca);
+						}
+					}
+
+					context.fillStyle = "#FF0000";
+					context.fillRect(maca_x * tamanho_peca, maca_y * tamanho_peca, tamanho_peca, tamanho_peca);
+
+					context.fillStyle = "#32CD32";
+
+					for (var i = 0; i < trail.length; i++) {
+
+						context.fillRect(trail[i].x * tamanho_peca, trail[i].y * tamanho_peca, tamanho_peca, tamanho_peca);
+
+						if (trail[i].x == ponto_x && trail[i].y == ponto_y) {
+
+							vel_x = vel_y = 0;
+							tail = 0;
+							console.log("game over");
+
+						}
+
+					}
+
+					context.fillStyle = "#2F4F4F"
+					context.fillRect(ponto_x * tamanho_peca, ponto_y * tamanho_peca, tamanho_peca, tamanho_peca);
+
+					trail.push({x:ponto_x, y:ponto_y})
+
+					while (trail.length > tail){
+
+						trail.shift();
+
+					}
+
+					if (maca_x == ponto_x && maca_y == ponto_y) {
+
+						tail++;
+						maca_x = maca_y = Math.floor(Math.random() * quantidade_peca);
+
+					}
+
+				}
+
+				function keyPush(event){
+
+					switch (true) /*Verifica qual tecla foi apertada*/ {
+
+						case event.keyCode == 37 && dontRepeat != 1: //Seta esquerda
+							vel_x = -vel;
+							vel_y = 0;
+							dontRepeat = 3;
+							break;
+
+						case event.keyCode == 38 && dontRepeat != 2: //Seta cima
+							vel_x = 0;
+							vel_y = -vel;
+							dontRepeat = 4;
+							break;
+
+						case event.keyCode == 39 && dontRepeat != 3: //Seta direita
+							vel_x = vel;
+							vel_y = 0;
+							dontRepeat = 1;
+							break;
+
+						case event.keyCode == 40 && dontRepeat != 4: //Seta baixo
+							vel_x = 0;
+							vel_y = vel;
+							dontRepeat = 2;
+							break;
+
+						default:
+							break;
+
+					}
+
+				}
+
+			}
+
+		</script>
+	</body>
+</html>
